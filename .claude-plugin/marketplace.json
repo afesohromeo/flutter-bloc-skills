@@ -1,0 +1,16 @@
+{
+  "name": "flutter-bloc-skills",
+  "owner": {
+    "name": "Afesoh Romeo"
+  },
+  "metadata": {
+    "description": "Agent skills for Flutter apps built with flutter_bloc"
+  },
+  "plugins": [
+    {
+      "name": "flutter-bloc",
+      "source": "./",
+      "description": "Feature workflow, API errors, Serverpod 4 and code review skills for flutter_bloc apps"
+    }
+  ]
+}

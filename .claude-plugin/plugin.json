@@ -1,0 +1,11 @@
+{
+  "name": "flutter-bloc",
+  "version": "1.0.0",
+  "description": "Feature workflow, API errors, Serverpod 4 and code review skills for flutter_bloc apps",
+  "author": {
+    "name": "Afesoh Romeo"
+  },
+  "repository": "https://github.com/afesohromeo/flutter-bloc-skills",
+  "license": "MIT",
+  "keywords": ["flutter", "dart", "bloc", "flutter_bloc", "serverpod"]
+}

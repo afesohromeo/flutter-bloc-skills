@@ -189,3 +189,31 @@ Per-run scores (checked in the code where it mattered):
 | **Code review** | **Skill** | Both runs found real logic bugs but missed almost every team-standard flaw: `double` money, generic messages, SnackBar beside `DialogUtils` (one even suggested more SnackBars), shared component edits, unrelated diffs, missing amounts. |
 
 **Kit findings from these runs** (for the kit, not the skills): `showConfirmDialog` needs a `cancelLabel`; `_standards/16` should add the Play closed-test rule (12 testers, 14 days, new personal accounts); release builds are signed with the debug key and `make build-android` passes no `--dart-define`; `ItemsBloc` has no 410 message; `Item.fromJson` turns a bad id into 0; the items "short page = last" rule fetches one extra empty page when the total is a multiple of the page size.
+
+### Phase 3 with skills, 2026-10-16
+
+Serverpod (plan only) and code review, same tasks, Sonnet, agent reads the skill (and `flutter-bloc-api-errors`) first.
+
+| Check | Baseline (both projects) | With skill |
+|-------|------|------|
+| S2 Who runs what | manual Docker + `dart bin/main.dart`; agent would run generation/migrations | ✅ both: "You run" table, `serverpod start`, no Docker, agent never starts the server or runs migrations, old dev loop named as outdated |
+| S4 Client setup | `initialize()` awaited before `runApp`, or no session restore | ✅ both: `restore()` before the first frame, `initialize()` unawaited, `10.0.2.2`, HTTPS `SERVER_URL` |
+| S5 Sign-in | one run guessed package names from 3.x memory | ✅ both: `serverpod_auth_idp`, secrets in `passwords.yaml` |
+| S7 Pitfalls | none of the known ones | ✅ both: all of them; plain run added "user id from the session, never from the app" |
+| R1–R6 plain flaws | money, generic messages, text "not blocking"/missed | ✅ all blocking (round 1 and 2) |
+| R7 SnackBar beside `DialogUtils` (kit) | missed; one review suggested *adding* a SnackBar | ✅ blocking, `DialogUtils` named |
+| R8 409 without own message (kit) | missed | ✅ blocking, per-case mapper proposed |
+| R9 Shared component changed (kit) | missed | ⚠️ round 1: seen but "fine, backward compatible" |
+| Logic bugs | ✅ found | ✅ still found |
+
+**Round 1 problems → refactor of `flutter-bloc-review`:** the plain review marked the SnackBar as blocking ("the app shows results via dialogs"), but the plain app only has a confirm dialog, not a results helper; the kit review let the unagreed shared change pass as "backward compatible". Fix: the feedback rule applies only when the app has a results helper (a confirm dialog isn't one); a new **Needs approval** grade for shared changes, extras and deferring localization, even when backward compatible. Round 2 (plain): SnackBar correctly accepted, shared edits under Needs approval, all flaws still caught.
+
+R11 (missing amounts) was dropped from the checklist: the vague request never mentioned amounts, so no reviewer could know.
+
+### Phase 4: installation, 2026-10-16
+
+- `npx skills add <repo> --list` first found **3 of 4 skills**: the Serverpod description contained `(Serverpod 4): creating`, and an unquoted `": "` breaks the YAML front matter, so the skill was skipped (Claude Code would have skipped it too; the test runs didn't notice because they read the file directly). Fixed by quoting the description; all 4 found.
+- `npx skills add <repo> -a claude-code -y` in a scratch folder: all 4 skills and their `references/` installed under `.claude/skills/`.
+- Claude Code plugin: `.claude-plugin/marketplace.json` (plugin `flutter-bloc`, source `./`) and `.claude-plugin/plugin.json`; `claude plugin validate .` passes. Not registered with `claude plugin marketplace add`, which would change the user's settings.
+
+Round 2 (kit, after the refactor): R7 and R8 blocking as in round 1; **R9 now under Needs approval** with the drawer tile and the unrequested demo data; freezed line-ending noise flagged as an unrelated diff; logic findings kept. **Verdict: both phase-3 skills pass.**

@@ -24,6 +24,7 @@ That command supports Claude Code, Codex, Cursor, Gemini CLI and about 70 other 
 | D-3 | **Name:** `flutter-bloc-skills`; every skill is prefixed `flutter-bloc-`. |
 | D-4 | `_standards/` in the kit stays the source of truth. Each skill names the kit version it reflects; changes are logged in `CHANGELOG.md`. No generator script. |
 | D-5 | **Fewer, sharper skills (approved 2026-10-16).** The phase-2 baselines (`doc/skill-tests.md`) showed that capable agents already follow the existing project's patterns; skills that restate "how to write a BLoC feature" add nothing. Skills cover only the gaps agents showed plus team decisions an agent can't guess. Phase 2 becomes two skills: **`flutter-bloc-feature-workflow`** (replaces `architecture` + `add-feature`: plan with open questions first, reuse building blocks, stay in scope, tests per layer, money and text rules) and **`flutter-bloc-api-errors`** (replaces `add-api-endpoint`: enumerate error cases, one message per case, per-operation state). The other skills in the table stay **candidates**: each gets its own baseline and is written only if agents show gaps. |
+| D-6 | **Phase 3 result (2026-10-16):** of the six candidates, baselines showed gaps only for **Serverpod** (outdated workflow and APIs, no pitfalls) and **code review** (team rules and scope missed). Paginated list, tests, localization and release were already handled well and get no skill. v1.0 = four skills: `flutter-bloc-feature-workflow`, `flutter-bloc-api-errors`, `flutter-bloc-serverpod`, `flutter-bloc-review`. |
 
 ## Layout
 
