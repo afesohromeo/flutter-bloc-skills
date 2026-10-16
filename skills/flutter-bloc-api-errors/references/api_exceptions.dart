@@ -1,10 +1,12 @@
 // Typed API exceptions for apps that don't have their own.
 // Copy into the data layer (e.g. lib/data/api/api_exceptions.dart).
+// Written for package:http; for Dio, see the note above _messageFrom.
 // Repositories rethrow these; BLoCs turn them into localized messages.
 
 import 'dart:async';
 import 'dart:convert';
-import 'dart:io';
+
+import 'package:http/http.dart' as http;
 
 /// Base type: the request reached the server and it answered with an error.
 class ApiException implements Exception {
@@ -62,7 +64,8 @@ Future<T> guardRequest<T>(
     return await request().timeout(timeout);
   } on TimeoutException catch (e) {
     throw NetworkException(e);
-  } on SocketException catch (e) {
+  } on http.ClientException catch (e) {
+    // package:http reports connection failures this way on every platform.
     throw NetworkException(e);
   }
 }
@@ -74,7 +77,6 @@ Future<T> guardRequest<T>(
 //     throwIfError(code, jsonEncode(e.response?.data));
 //     rethrow;
 //   }
-// (SocketException comes from dart:io; on the web, catch http.ClientException.)
 
 String? _messageFrom(String body) {
   try {

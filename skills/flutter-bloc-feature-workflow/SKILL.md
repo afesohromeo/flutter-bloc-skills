@@ -46,7 +46,7 @@ Before writing UI, search `shared/`, `common/`, `widgets/`, `components/`, `util
 - Don't edit shared components, other features or the theme for this feature unless the plan listed it and the developer agreed.
 - `dart format` only the files you touched, never the whole project.
 - Code generation rewrites unrelated generated files? Leave them out of your change and say so.
-- No extra entry points or features (drawer items, detail screens) that weren't asked for.
+- A new page needs **one** way in: put it where similar pages are reached from (drawer, tab, button on the parent page) and name it in the plan. Nothing else that wasn't asked for (extra entry points, detail screens).
 - Follow the project's rule on who runs commands (code generation, migrations). When unsure, tell the developer which command to run.
 
 ## 4. Values the user sees
@@ -57,7 +57,7 @@ Before writing UI, search `shared/`, `common/`, `widgets/`, `components/`, `util
 
 ## 5. Tests come with each layer
 
-Write the test first. Repository (mocked HTTP client), BLoC (`bloc_test`: each success **and each error case**), every page (widget test: loading, data, empty, error, the main action). `flutter analyze` adds no new issues.
+Write the test first. Repository (mocked HTTP client), BLoC (`bloc_test`: each success **and each error case**), every page (widget test: loading, data, empty, error, the main action). `flutter analyze` adds no new issues, even where the code you copied has them.
 
 ## Red flags: stop and fix
 
@@ -66,6 +66,7 @@ Write the test first. Repository (mocked HTTP client), BLoC (`bloc_test`: each s
 - `double` for an amount
 - `ScaffoldMessenger` in an app with a feedback helper
 - A `shared/` file in your diff that the plan didn't list
+- A new page with no way to reach it
 - `dart format .` or a diff full of regenerated files you didn't touch
 
 ## Report

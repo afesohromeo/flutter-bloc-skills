@@ -95,3 +95,40 @@ Scope and process:
 | G7 Localization missing and not flagged; dates not locale-aware | both plain runs |
 
 **Finding (first baseline):** with a detailed task and a strong model, both baselines already meet almost every check. In the kit app, the kit's own code (the `items` feature) teaches the patterns; in the plain app, the model's general flutter_bloc knowledge does. Skills that restate these patterns would not change the result. The real gaps are small: localization in an app without it, locale-aware dates, and scope discipline (unrequested changes, no plan).
+
+### Results: with skills (vague task, Sonnet), 2026-10-16, round 1
+
+Same task and model as the harder baseline; the agent read `flutter-bloc-feature-workflow` and `flutter-bloc-api-errors` first.
+
+| Gap | Kit app: baseline → with skills | Plain app: baseline → with skills |
+|-----|------|------|
+| G1 Unknowns and plan | built on silent guesses → plan and questions listed first, each default named | same improvement |
+| G2 One message per error case | 409 shown with server text → own messages for 409, 404/410, 401, network, unreadable, separate for loading and cancel; reloads after 404/409 | one generic message per operation → own message per case, per operation (`orders_messages.dart`) |
+| G3 Building blocks | SnackBar → `DialogUtils` + `showConfirmDialog`, `formatMoney`, `formatDate` | no helpers in the app; SnackBar is the only feedback style ✅ |
+| G4 Scope | shared component edited, whole-project format, unrelated generated files → no shared edits (the wanted `dismissLabel` was asked about instead), unrelated `.freezed.dart` files reverted | only touched files formatted; the edit to `todos_page.dart` (entry point) flagged for confirmation |
+| G5 Money | — → `int` minor units + ISO code, `formatMoney` | `double` → `int` minor units + code; locale grouping needs `intl`, asked instead of adding the dependency |
+| G6 Tests | 157 total → 34 new: provider (each status), repository, BLoC (exact message per case), page | 5 BLoC tests → 26: repository per status, BLoC per case, page states |
+| G7 Text and dates | EN + FR ✅ | hardcoded, now **flagged**; dates with `MaterialLocalizations` |
+| C12 | no issues, 183 tests | 4 new analyzer infos (copied the `todos` constructor style), 40 tests |
+
+**New problems the skills caused or didn't fix:**
+- Kit: the page had **no way in**: the agent read "no extra entry points" as "no entry point at all".
+- Plain: new analyzer infos, justified as "same as the existing feature".
+
+**Refactor:** "A new page needs one way in, where similar pages are reached from"; "no new analyzer issues, even where the code you copied has them"; red flag "a new page with no way to reach it". Re-tested in round 2.
+
+**Kit finding (not a skill issue):** 3 of the 4 kit runs wanted a "Keep order" label on `showConfirmDialog`, whose dismiss button is always "Cancel" (ambiguous next to "Cancel order"). Suggest a `cancelLabel` parameter in the kit.
+
+### Results: with skills, round 2 (after the refactor), 2026-10-16
+
+| Check | Kit app | Plain app |
+|-------|---------|-----------|
+| Way in | ✅ one drawer tile, like the other top-level pages (+7 lines in `app_drawer.dart`, named in the report) | ✅ one app-bar action on the home page, flagged for confirmation |
+| New analyzer issues | ✅ none, 181 tests pass | ✅ none (the agent used the newer constructor style instead of copying the lint), 36 tests pass |
+| G1–G7 | ✅ as in round 1 (own message per case and operation, `DialogUtils`, no other shared edits, unrelated generated files reverted, `int` money, tests per layer, EN + FR) | ✅ as in round 1; hardcoded text flagged |
+
+**Fixed in the reference:** the plain-app agent noticed that `guardRequest` caught only `dart:io`'s `SocketException`. Since http 1.0, `package:http` reports connection failures as `http.ClientException` on every platform (including web). The reference now catches that and no longer imports `dart:io`.
+
+**Seen, left for a later skill:** the kit agent used a "Load more" button although the app's lists use infinite scroll (`PagingController` in `items`). Evidence for the `flutter-bloc-add-paginated-list` candidate.
+
+**Verdict:** both skills pass. Phase 2 complete.
