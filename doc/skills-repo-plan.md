@@ -23,6 +23,7 @@ That command supports Claude Code, Codex, Cursor, Gemini CLI and about 70 other 
 | D-2 | **Target: any flutter_bloc app**, not only apps built from the kit. Rules are generic; where the kit has a ready-made piece (dialogs, responsive scaffold, paginated list, API error handler, test helpers), a skill says "use the project's equivalent; if there is none, add it from `references/`". The README recommends the kit as the fastest start. Kit-only names (`customColors`, `app_theme_kit`) become "the app's theme". |
 | D-3 | **Name:** `flutter-bloc-skills`; every skill is prefixed `flutter-bloc-`. |
 | D-4 | `_standards/` in the kit stays the source of truth. Each skill names the kit version it reflects; changes are logged in `CHANGELOG.md`. No generator script. |
+| D-5 | **Fewer, sharper skills (approved 2026-10-16).** The phase-2 baselines (`doc/skill-tests.md`) showed that capable agents already follow the existing project's patterns; skills that restate "how to write a BLoC feature" add nothing. Skills cover only the gaps agents showed plus team decisions an agent can't guess. Phase 2 becomes two skills: **`flutter-bloc-feature-workflow`** (replaces `architecture` + `add-feature`: plan with open questions first, reuse building blocks, stay in scope, tests per layer, money and text rules) and **`flutter-bloc-api-errors`** (replaces `add-api-endpoint`: enumerate error cases, one message per case, per-operation state). The other skills in the table stay **candidates**: each gets its own baseline and is written only if agents show gaps. |
 
 ## Layout
 

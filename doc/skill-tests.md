@@ -57,4 +57,41 @@ Model: the session's default (Opus 5.5). Checked by reading the code, not only t
 
 Also seen: the kit run changed a shared component (`showConfirmDialog` got a `dismissLabel`) and added a drawer entry nobody asked for; neither run presented a plan (they were told not to ask).
 
-**Finding:** with a detailed task and a strong model, both baselines already meet almost every check. In the kit app, the kit's own code (the `items` feature) teaches the patterns; in the plain app, the model's general flutter_bloc knowledge does. Skills that restate these patterns would not change the result. The real gaps are small: localization in an app without it, locale-aware dates, and scope discipline (unrequested changes, no plan).
+### Results: harder baseline (no skill, vague task, Sonnet), 2026-10-16
+
+Task, as a developer would write it: *"Add an orders page where the user can see their orders and cancel a pending one. The backend has GET /orders, GET /orders/{id} and POST /orders/{id}/cancel."* The agent was told that the developer can't answer, and to list what it would have asked or waited for.
+
+| # | Kit app | Plain app |
+|---|---------|-----------|
+| C1 | ✅ | ✅ |
+| C2 | ✅ copied `items` | ✅ copied `todos` |
+| C3 | ✅ list and cancel tracked separately | ⚠️ one status for the list plus a set of ids being cancelled; no error stored per operation |
+| C4 | ⚠️ typed exceptions mapped (400 → server message, 401, network); no own message for "can no longer be cancelled" | ❌ one generic "Something went wrong" for loading, one "Could not cancel the order" for every cancel failure; repository throws hardcoded `Exception('Failed …')` |
+| C5 | ✅ EN + FR | ❌ hardcoded English, not flagged |
+| C6 | — no amounts shown (fields unknown) | ❌ `total` stored as `double`, no currency |
+| C7 | ❌ **SnackBar** for the result although the app has `DialogUtils`; `showConfirmDialog` used | ⚠️ confirm dialog; SnackBar |
+| C8 | — no child page | — no child page |
+| C9 | ✅ named route, drawer entry | ⚠️ icon on the todos app bar |
+| C10 | ✅ skeleton, error, empty | ✅ own small views |
+| C11 | ✅ repository, BLoC, page tests | ❌ BLoC tests only; no repository or widget test |
+| C12 | ✅ no issues, 157 tests | ⚠️ 2 new analyzer infos (same pattern as `todos`), 7 tests |
+
+Scope and process:
+- **Kit:** changed a shared component (`showConfirmDialog` `dismissLabel`, as the Opus run did); ran `dart format` on the whole project (10 unrelated files reformatted); regenerated unrelated `.freezed.dart` files; ran code generation itself.
+- **Both:** listed good open questions (response shape, error codes, money units, authentication) but **built anyway**, with guesses, instead of presenting them first. Neither presented a plan.
+
+**Test-setup caveat:** the test agents also see this machine's Claude memory and the CLAUDE.md of the folder the session runs in (they mentioned "plan first" and "skills"). That is the same for every run, so before/after comparisons stay fair.
+
+### Gaps the skills must close (from the four baselines)
+
+| Gap | Seen in |
+|-----|---------|
+| G1 Unknowns (response shape, error codes, money units, auth) guessed instead of asked; no plan presented before coding | all 4 |
+| G2 Error cases not enumerated: generic messages, or the server's message instead of an own message per known case | Sonnet runs |
+| G3 Existing building blocks ignored (SnackBar although the app has a dialog helper) | Sonnet kit |
+| G4 Changes outside the task: shared components edited, whole-project format, unrelated generated files | both kit runs |
+| G5 Money as `double`, no currency | Sonnet plain |
+| G6 Tests: no repository or widget tests | Sonnet plain |
+| G7 Localization missing and not flagged; dates not locale-aware | both plain runs |
+
+**Finding (first baseline):** with a detailed task and a strong model, both baselines already meet almost every check. In the kit app, the kit's own code (the `items` feature) teaches the patterns; in the plain app, the model's general flutter_bloc knowledge does. Skills that restate these patterns would not change the result. The real gaps are small: localization in an app without it, locale-aware dates, and scope discipline (unrequested changes, no plan).
